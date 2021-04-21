@@ -14,36 +14,28 @@ class MoistureSensorBackend extends ApplicationChannel {
   Controller get entryPoint {
     final router = Router();
     router.route('/getMoisture').linkFunction((request) async {
-      var portNum = 0;
-      var ardDeviceFile = File('/dev/ttyACM$portNum');
-
-      //Make the request to the arduino
-      await ardDeviceFile.writeAsString('begin request');
-      sleep(Duration(seconds: 1));
-
-      //Open the serial port
-      var ardSerial = ardDeviceFile.openRead();
+      var portNum = 1;
       var lines = <String>[];
-      //get a value out of the serial port (Second last as it's most likely to be read correctly)
-      var gotline = Completer<void>();
-      ardSerial
-          .transform(utf8.decoder)
-          .transform(LineSplitter())
-          .listen((line) {
-        lines.add(line);
-        if (!gotline.isCompleted) {
-        }
-      });
-      await gotline.future;
+      lines = await serialToList(portNum);
+      while (!lines[0].startsWith('#') || lines[0].length < 4) {
+        lines = await serialToList(portNum);
+      }
       var currentVal = lines[lines.length - 1];
-      //close the request to the arduino
-      await ardDeviceFile.writeAsString('end request');
       //Anolog to percentage conversion maths from https://www.instructables.com/Plant-Moisture-Sensor-W-Arduino/
       var currentPercent = 2.718282 *
           2.718282 *
-          (.008985 * int.parse(currentVal) + 0.207762).roundToDouble();
+          (.008985 * int.parse(currentVal.replaceAll('#', '')) + 0.207762)
+              .roundToDouble();
       return Response.ok({'MoisturePercent': currentPercent});
     });
     return router;
+  }
+
+  Future<List<String>> serialToList(int portNum) async {
+    var ardDeviceFile = File('/dev/ttyACM$portNum');
+    var ardSerial = ardDeviceFile.openRead();
+    await ardDeviceFile.writeAsString('i');
+    var lines = await ardSerial.transform(utf8.decoder).toList();
+    return lines;
   }
 }

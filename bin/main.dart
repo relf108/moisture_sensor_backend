@@ -1,9 +1,9 @@
 import 'package:conduit/conduit.dart';
 import 'package:moisture_sensor/channel.dart';
+import 'package:moisture_sensor/db_commands.dart';
 import 'package:moisture_sensor/moisture_sensor.dart';
 
 Future main() async {
-
   final app = Application<MoistureSensorBackend>()
     ..options.configurationFilePath = 'config.yaml'
     ..options.port = 8888;
@@ -13,4 +13,6 @@ Future main() async {
 
   print('Application started on port: ${app.options.port}.');
   print('Use Ctrl-C (SIGINT) to stop running the application.');
+
+  DBCommands.initDB();
 }

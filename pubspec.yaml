@@ -9,8 +9,6 @@ environment:
 dependencies:
 #  path: ^1.7.0
   conduit: ^2.0.0-b1
-  dcli: ^1.0.0
-  libserialport: ^0.2.0+2
   mysql1: ^0.19.0
 
 dev_dependencies:

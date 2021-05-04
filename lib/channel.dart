@@ -35,8 +35,8 @@ class MoistureSensorBackend extends ApplicationChannel {
       return Response.ok({'MoisturePercent': currentPercent});
     });
 
-    router.route('/plot').linkFunction((request) async {
-      Map resp = await DBCommands.getRows();
+    router.route('/history').linkFunction((request) async {
+      List resp = await DBCommands.getRows();
       return Response.ok(resp.toString());
     });
 

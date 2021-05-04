@@ -32,16 +32,17 @@ class DBCommands {
     await conn.close();
   }
 
-  static Future<Map<int, DateTime>> getRows() async {
-    var percentDate = <int, DateTime>{};
+  static Future<List<Map<int, DateTime>>> getRows() async {
+    var listPercentDate = <Map<int, DateTime>>[];
     var conn = await getConnection();
     var result =
         await conn.query('select moisture_percent, date from tbl_moisture');
     for (var row in result) {
       var percent = row[0];
       var date = row[1];
-      percentDate.addAll(<int, DateTime>{percent: date});
+      var percentDate = <int, DateTime>{percent: date};
+      listPercentDate.add(percentDate);
     }
-    return percentDate;
+    return listPercentDate;
   }
 }
